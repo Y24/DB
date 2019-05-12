@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2019.
  *  Author: Y24
- *  All rigths reserved.
+ *  All rights reserved.
  */
 
 package cn.org.y24;
@@ -33,14 +33,8 @@ class sceneManager extends baseManager<Scene> {
         return currentScene;
     }
 
-    public Parent formParentFromRes(String resource) {
-        try {
-            return new FXMLLoader(getClass().getResource(resource)).load();
-        } catch (IOException e) {
-            System.out.println("unable to load fxml resource named " + resource);
-            e.printStackTrace();
-        }
-        return null;
+    public FXMLLoader getFXMLoaderFromRes(String resource) {
+        return new FXMLLoader(getClass().getResource(resource));
     }
 
     boolean switchTo(String sceneName) {

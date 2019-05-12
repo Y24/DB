@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2019.
  *  Author: Y24
- *  All rigths reserved.
+ *  All rights reserved.
  */
 
 package cn.org.y24;
@@ -47,7 +47,7 @@ class stageManager extends baseManager<sceneManager> {
         for (sceneManager each : currentSceneManagers) {
             each.getOwnerStage().close();
         }
-        //Note: after all Stages have been closed,the program tends to die,so the next code is apparently unreachable.
+        //Note: after all Stages have been closed,the program tends to die,so the following code is apparently unreachable.
         currentSceneManagers.clear();
     }
 }
