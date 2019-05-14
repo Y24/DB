@@ -69,7 +69,7 @@ public class loginViewController extends baseStageController implements Initiali
         if (connection != null) {
             messageLabel.setVisible(false);
             sceneManager SceneManager = StageManager.get(Main.primarySceneManagerName);
-            Parent mainParent = SceneManager.init("mainView.fxml", StageManager);
+            Parent mainParent = SceneManager.init("mView.fxml", StageManager);
             Scene mainScene = new Scene(mainParent);
             Stage mainStage = new Stage();
             mainStage.setScene(mainScene);

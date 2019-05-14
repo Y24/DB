@@ -25,10 +25,10 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         sceneManager primarySceneManager = new sceneManager(primaryStage);
         primaryStage.setResizable(false);
-        Parent rootParent = primarySceneManager.init("loginView.fxml", StageManager);
-        Scene rootScene = new Scene(rootParent, 600, 600);
-       /* Parent rootParent = primarySceneManager.init("mainView.fxml", StageManager);
-        Scene rootScene = new Scene(rootParent);*/
+      /*  Parent rootParent = primarySceneManager.init("loginView.fxml", StageManager);
+        Scene rootScene = new Scene(rootParent, 600, 600);*/
+        Parent rootParent = primarySceneManager.init("mainView.fxml", StageManager);
+        Scene rootScene = new Scene(rootParent);
         primaryStage.setMaximized(true);
         primaryStage.setResizable(true);
         primarySceneManager.add(rootScene, primarySceneName);
