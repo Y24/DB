@@ -6,11 +6,25 @@
 
 package cn.org.y24;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 
 class stageManager extends baseManager<sceneManager> {
     private LinkedList<sceneManager> currentSceneManagers = new LinkedList<>();
-
+    private ArrayList<deliverer> messageBox = new ArrayList<>();
+    public void sendBroadcastMessage(int senderID,Object message){
+        messageBox.add(new deliverer(senderID,deliverer.broadcastFlag,message));
+    }
+    public Collection<deliverer> receiveBroadcastMessage() {
+        Collection<deliverer> delivererCollection = new ArrayList<>();
+        for (deliverer message : messageBox) {
+            if (message.getReceiverHahCode() == deliverer.broadcastFlag) {
+                delivererCollection.add(message);
+            }
+        }
+        return delivererCollection;
+    }
     boolean showAdditional(String sceneManagerName) {
         if (get(sceneManagerName) != null) {
             currentSceneManagers.add(get(sceneManagerName));

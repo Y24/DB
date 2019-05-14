@@ -7,6 +7,7 @@
 package cn.org.y24;
 
 class deliverer {
+    public static int broadcastFlag = 0;
     private int senderHashCode;
     private int receiverHahCode;
     private Object message;

@@ -14,12 +14,6 @@ interface IStageController {
     void setStageManager(stageManager StageManager);
 }
 
-public abstract class baseStageController implements IStageController {
-    protected stageManager stageManager;
-
-    @Override
-    public void setStageManager(stageManager stageManager) {
-        this.stageManager = stageManager;
-    }
+abstract public class baseStageController implements IStageController{
 
 }

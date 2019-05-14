@@ -12,8 +12,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 
 class sceneManager extends baseManager<Scene> {
@@ -33,11 +31,20 @@ class sceneManager extends baseManager<Scene> {
         return currentScene;
     }
 
-    public FXMLLoader getFXMLoaderFromRes(String resource) {
-        return new FXMLLoader(getClass().getResource(resource));
+    public Parent init(String resource, stageManager StageManager) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource));
+            Parent parent = fxmlLoader.load();
+            baseStageController controller = fxmlLoader.getController();
+            controller.setStageManager(StageManager);
+            return parent;
+        } catch (IOException e) {
+            System.err.println("Cannot load Parent!");
+            return null;
+        }
     }
 
-    boolean switchTo(String sceneName) {
+    boolean select(String sceneName) {
         if (get(sceneName) == null) {
             return false;
         } else {
@@ -46,5 +53,4 @@ class sceneManager extends baseManager<Scene> {
             return true;
         }
     }
-
 }

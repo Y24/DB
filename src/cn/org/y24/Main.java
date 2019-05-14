@@ -16,24 +16,23 @@ import java.io.IOException;
 
 public class Main extends Application {
     public static String primarySceneManagerName = "primaryStage";
+    public static String primarySceneName = "primaryScene";
+    public static String mainSceneManagerName = "mainStage";
     private static stageManager StageManager = new stageManager();
+
 
     @Override
     public void start(Stage primaryStage) {
         sceneManager primarySceneManager = new sceneManager(primaryStage);
-        FXMLLoader rootFXMLLoader = primarySceneManager.getFXMLoaderFromRes("sample.fxml");
-        try {
-            Parent rootParent = rootFXMLLoader.load();
-            Scene rootScene = new Scene(rootParent, 300, 400);
-            primarySceneManager.add(rootScene, rootScene.hashCode() + "");
-            primarySceneManager.switchTo(rootScene.hashCode() + "");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //Warning: only after the call of FXMLLoader.load() can we get the controller instance!
-        baseStageController controller = rootFXMLLoader.getController();
-        controller.setStageManager(StageManager);
-
+        primaryStage.setResizable(false);
+        Parent rootParent = primarySceneManager.init("loginView.fxml", StageManager);
+        Scene rootScene = new Scene(rootParent, 600, 600);
+       /* Parent rootParent = primarySceneManager.init("mainView.fxml", StageManager);
+        Scene rootScene = new Scene(rootParent);*/
+        primaryStage.setMaximized(true);
+        primaryStage.setResizable(true);
+        primarySceneManager.add(rootScene, primarySceneName);
+        primarySceneManager.select(primarySceneName);
         StageManager.add(primarySceneManager, primarySceneManagerName);
         StageManager.showOnly(primarySceneManagerName);
 
