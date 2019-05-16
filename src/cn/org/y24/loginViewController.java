@@ -26,9 +26,6 @@ import java.util.ResourceBundle;
 public class loginViewController extends baseStageController implements Initializable {
     private stageManager StageManager;
     private static final String dbURLPrefix = "jdbc:mysql://localhost:3306/";
-    private String userName = null;
-    private String password = null;
-    private String databaseName = null;
     @FXML
     TextField userTextFieldID;
     @FXML
@@ -47,40 +44,39 @@ public class loginViewController extends baseStageController implements Initiali
 
     @FXML
     void ActionForUser() {
-        userName = userTextFieldID.getText();
+        //userName = userTextFieldID.getText();
         passwordID.requestFocus();
     }
 
     @FXML
     void ActionForPassword() {
-        password = passwordID.getText();
+        // password = passwordID.getText();
         databaseNameID.requestFocus();
     }
 
     @FXML
     void ActionForDatabase() {
-        databaseName = databaseNameID.getText();
+        // databaseName = databaseNameID.getText();
         loginButtonID.requestFocus();
     }
 
     @FXML
     void loginAction() {
-        Connection connection = authorize(userName, password, databaseName);
+        Connection connection = authorize(userTextFieldID.getText(), passwordID.getText(), databaseNameID.getText());
         if (connection != null) {
             messageLabel.setVisible(false);
             sceneManager SceneManager = StageManager.get(Main.primarySceneManagerName);
-            Parent mainParent = SceneManager.init("mView.fxml", StageManager);
-            Scene mainScene = new Scene(mainParent);
+            StageManager.sendBroadcastMessage(SceneManager.getCurrentScene().hashCode(), connection);
+            Parent mainParent = SceneManager.init("mainView.fxml", StageManager);
+            Scene mainScene = new Scene(mainParent,1000,800);
             Stage mainStage = new Stage();
             mainStage.setScene(mainScene);
-            mainStage.setMaximized(true);
+           // mainStage.setMaximized(true);
             //mainStage.setTitle("Y24");
             sceneManager mainSceneManager = new sceneManager(mainStage);
             StageManager.add(mainSceneManager, Main.mainSceneManagerName);
             mainSceneManager.add(mainScene, "main");
             mainSceneManager.select("main");
-            StageManager.sendBroadcastMessage(SceneManager.getCurrentScene().hashCode(), connection);
-
             StageManager.convertTo(Main.mainSceneManagerName);
         } else {//connection fails
             messageLabel.setVisible(true);
