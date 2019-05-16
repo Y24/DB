@@ -68,15 +68,14 @@ public class loginViewController extends baseStageController implements Initiali
             sceneManager SceneManager = StageManager.get(Main.primarySceneManagerName);
             StageManager.sendBroadcastMessage(SceneManager.getCurrentScene().hashCode(), connection);
             Parent mainParent = SceneManager.init("mainView.fxml", StageManager);
-            Scene mainScene = new Scene(mainParent,1000,800);
+            Scene mainScene = new Scene(mainParent, 1000, 800);
             Stage mainStage = new Stage();
             mainStage.setScene(mainScene);
-           // mainStage.setMaximized(true);
-            //mainStage.setTitle("Y24");
             sceneManager mainSceneManager = new sceneManager(mainStage);
             StageManager.add(mainSceneManager, Main.mainSceneManagerName);
             mainSceneManager.add(mainScene, "main");
             mainSceneManager.select("main");
+            mainSceneManager.getOwnerStage().setTitle("Database Manager");
             StageManager.convertTo(Main.mainSceneManagerName);
         } else {//connection fails
             messageLabel.setVisible(true);

@@ -178,7 +178,7 @@ public class MainViewController extends baseStageController implements Initializ
         accordion.setPrefWidth(550);
         accordion.setPrefHeight(250);
         alert.setGraphic(accordion);
-        alert.setResizable(true);
+        alert.setHeaderText("info");
         return alert;
     }
 
