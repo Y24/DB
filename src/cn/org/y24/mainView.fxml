@@ -8,12 +8,10 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-
 <BorderPane fx:id="rootPaneID" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="462.0" prefWidth="691.0" xmlns="http://javafx.com/javafx/8.0.172-ea"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.org.y24.MainViewController">
@@ -22,14 +20,28 @@
             <menus>
                 <Menu mnemonicParsing="false" text="View">
                     <items>
-                        <MenuItem fx:id="tablesMenuItemID" mnemonicParsing="false" onAction="#showTables"
-                                  text="Show Tables"/>
-                        <MenuItem mnemonicParsing="false" onAction="#showConnectionDetails" text="Connection details"/>
+                        <MenuItem fx:id="tablesMenuItemID" mnemonicParsing="false" onAction="#showTables" text="Query">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#showConnectionDetails" text="Connection">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="C" control="UP" meta="UP" shift="DOWN"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" onAction="#showAbout"/>
+                        <MenuItem mnemonicParsing="false" onAction="#showAbout" text="About">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="H" control="UP" meta="UP" shift="UP"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
                     </items>
                 </Menu>
             </menus>
@@ -43,42 +55,24 @@
                         <Accordion fx:id="tablesDetailsAccordionID"/>
                     </content>
                 </Tab>
-                <Tab fx:id="SQLDetailsTabTabID" text="SQL editor">
+                <Tab fx:id="SQLDetailsTabID" text="SQL editor">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <TabPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #0fb0ff;"
-                                         tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="20.0"
-                                         AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="14.0"
-                                         AnchorPane.topAnchor="14.0">
-                                    <tabs>
-                                        <Tab text="SQL 0">
-                                            <content>
-                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
-                                                            prefWidth="200.0">
-                                                    <children>
-                                                        <TextArea layoutX="14.0" layoutY="14.0" prefHeight="200.0"
-                                                                  prefWidth="200.0" style="-fx-border-color: black;"
-                                                                  AnchorPane.bottomAnchor="20.0"
-                                                                  AnchorPane.leftAnchor="14.0"
-                                                                  AnchorPane.rightAnchor="14.0"
-                                                                  AnchorPane.topAnchor="10.0">
-                                                            <font>
-                                                                <Font size="18.0"/>
-                                                            </font>
-                                                        </TextArea>
-                                                    </children>
-                                                </AnchorPane>
-                                            </content>
-                                        </Tab>
-                                    </tabs>
+                                <TabPane fx:id="SQLEditorTabPaneID" prefHeight="200.0" prefWidth="200.0"
+                                         style="-fx-background-color: #0fb0ff;" tabClosingPolicy="UNAVAILABLE"
+                                         AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="120.0"
+                                         AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+
                                 </TabPane>
                                 <VBox fx:id="SQLEditorVBoxID" layoutX="14.0" layoutY="14.0" prefHeight="304.0"
-                                      prefWidth="86.0" style="-fx-background-color: royalblue; -fx-border-radius: 8;"
+                                      prefWidth="86.0"
+                                      style=" -fx-background-color: royalblue; -fx-border-radius: 15; -fx-background-radius: 15;"
                                       AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="14.0"
                                       AnchorPane.topAnchor="14.0">
                                     <children>
-                                        <Button mnemonicParsing="false" text="New">
+                                        <Button mnemonicParsing="false" onAction="#newSQLEditorTab"
+                                                text="New">
                                             <VBox.margin>
                                                 <Insets bottom="14.0" left="10.0" right="10.0" top="14.0"/>
                                             </VBox.margin>
@@ -88,7 +82,8 @@
                                                 <Insets bottom="14.0" left="10.0" right="10.0" top="14.0"/>
                                             </VBox.margin>
                                         </Button>
-                                        <Button layoutX="20.0" layoutY="78.0" mnemonicParsing="false" text="Close">
+                                        <Button layoutX="20.0" layoutY="78.0" mnemonicParsing="false" onAction="#closeCurrentSQLEditorTab"
+                                                text="Close">
                                             <VBox.margin>
                                                 <Insets bottom="14.0" left="10.0" right="10.0" top="14.0"/>
                                             </VBox.margin>

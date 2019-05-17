@@ -8,7 +8,6 @@ package cn.org.y24;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,7 +20,10 @@ import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class MainViewController extends baseStageController implements Initializable {
     @FXML
@@ -33,19 +35,23 @@ public class MainViewController extends baseStageController implements Initializ
     @FXML
     public Tab tablesDetailsTabID;
     @FXML
-    public Tab SQLDetailsTabTabID;
+    public Tab SQLDetailsTabID;
     @FXML
     public VBox SQLEditorVBoxID;
     @FXML
     public Accordion tablesDetailsAccordionID;
+    @FXML
+    public TabPane SQLEditorTabPaneID;
+    public Button SQLEditorClose;
     private Connection connection = null;
     @FXML
     BorderPane rootPaneID;
     @FXML
     MenuBar menuBarID;
     private stageManager StageManager;
-
+    private SQLEditor sqlEditor;
     @Override
+
     public void setStageManager(stageManager StageManager) {
         this.StageManager = StageManager;
     }
@@ -189,6 +195,21 @@ public class MainViewController extends baseStageController implements Initializ
         alert.setHeaderText("About this Application");
         alert.setContentText(new aboutMessage("Y24", "1.0.0", "https://github.com/y24", "Linux/Intellj IDEA/OpenJFX 12", "light-weight Database Manager").toString());
         alert.showAndWait();
+    }
+
+    private void initializeSQLEditor() {
+        if (sqlEditor == null) {
+            sqlEditor = new SQLEditor(SQLEditorTabPaneID);
+        }
+    }
+    public void newSQLEditorTab() {
+        initializeSQLEditor();
+        sqlEditor.newTab("SQL " + sqlEditor.getCount());
+    }
+
+    public void closeCurrentSQLEditorTab() {
+        initializeSQLEditor();
+        sqlEditor.closeCurrentTab();
     }
 
     class aboutMessage {

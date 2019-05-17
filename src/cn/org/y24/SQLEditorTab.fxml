@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2019. 
+  ~  Author: Y24
+  ~  All rights reserved.
+  -->
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<Tab text="SQL 0">
+<content>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
+                prefWidth="200.0">
+        <children>
+            <TextArea layoutX="14.0" layoutY="14.0" prefHeight="200.0"
+                      prefWidth="200.0" style="-fx-border-color: black;"
+                      AnchorPane.bottomAnchor="20.0"
+                      AnchorPane.leftAnchor="14.0"
+                      AnchorPane.rightAnchor="14.0"
+                      AnchorPane.topAnchor="10.0">
+                <font>
+                    <Font size="18.0"/>
+                </font>
+            </TextArea>
+        </children>
+    </AnchorPane>
+</content>
+</Tab>
