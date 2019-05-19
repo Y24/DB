@@ -10,28 +10,24 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainViewController extends baseStageController implements Initializable {
     @FXML
     public MenuItem tablesMenuItemID;
-    @FXML
-    public TabPane TabPaneID;
-    @FXML
-    public AnchorPane AnchorPaneID;
     @FXML
     public Tab tablesDetailsTabID;
     @FXML
@@ -42,7 +38,10 @@ public class MainViewController extends baseStageController implements Initializ
     public Accordion tablesDetailsAccordionID;
     @FXML
     public TabPane SQLEditorTabPaneID;
-    public Button SQLEditorClose;
+    @FXML
+    public TextField queryTextFieldID;
+    @FXML
+    public TextArea logTextAreaID;
     private Connection connection = null;
     @FXML
     BorderPane rootPaneID;
@@ -50,25 +49,26 @@ public class MainViewController extends baseStageController implements Initializ
     MenuBar menuBarID;
     private stageManager StageManager;
     private SQLEditor sqlEditor;
+    private SQLLogger sqlLogger = new SQLLogger();
+
     @Override
 
     public void setStageManager(stageManager StageManager) {
         this.StageManager = StageManager;
     }
 
-    @FXML
-    public void receiveConnection() {
+    private void receiveConnection() {
         if (connection == null)
             connection = (Connection) ((deliverer) StageManager.receiveBroadcastMessage().toArray()[0]).getMessage();
         //  System.out.println(connection.toString());
     }
 
-    public void showTables() throws SQLException {
-        List<String[]> table = executeSQL("show tables");
+    public void showTables() {
+        List<String[]> table = executeQuerySQL("show tables");
         table.remove(0);
         Collection<TitledPane> collection = new ArrayList<>();
         for (String[] name : table) {
-            collection.add(formTitledPaneForTable(name[0], executeSQL("select * from " + name[0])));
+            collection.add(formTitledPaneForTable(name[0], executeQuerySQL("select * from " + name[0])));
         }
         tablesDetailsAccordionID.getPanes().setAll(collection);
         tablesDetailsAccordionID.setStyle("-fx-padding: 14px");
@@ -105,45 +105,51 @@ public class MainViewController extends baseStageController implements Initializ
         return newColumn;
     }
 
-    private ArrayList<String[]> executeSQL(String SQLStatement) throws SQLException {
+    private ArrayList<String[]> executeQuerySQL(String SQLStatement) {
         receiveConnection();
-        Statement statement = connection.createStatement();
-        ResultSet tables = statement.executeQuery(SQLStatement);
-        ResultSetMetaData tablesMetaData = tables.getMetaData();
-        int count = tablesMetaData.getColumnCount();
+        Statement statement;
         ArrayList<String[]> result = new ArrayList<>();
-        String[] labelName = new String[count];
-        for (int i = 1; i <= count; i++) {
-            labelName[i - 1] = tablesMetaData.getColumnLabel(i);
-        }
-        result.add(labelName);
-        while (tables.next()) {
-            String[] value = new String[count];
+        try {
+            statement = connection.createStatement();
+            ResultSet tables = statement.executeQuery(SQLStatement);
+            sqlLogger.add(SQLStatement, Calendar.getInstance());
+            ResultSetMetaData tablesMetaData = tables.getMetaData();
+            int count = tablesMetaData.getColumnCount();
+            String[] labelName = new String[count];
             for (int i = 1; i <= count; i++) {
-                value[i - 1] = tables.getString(i);
+                labelName[i - 1] = tablesMetaData.getColumnLabel(i);
             }
-            result.add(value);
+            result.add(labelName);
+            while (tables.next()) {
+                String[] value = new String[count];
+                for (int i = 1; i <= count; i++) {
+                    value[i - 1] = tables.getString(i);
+                }
+                result.add(value);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        logTextAreaID.textProperty().bindBidirectional(sqlLogger.getLogMessage());
     }
 
     public void showConnectionDetails() {
         receiveConnection();
         try {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            Alert connectionMessageAlert = createMessageAlertFromDatabaseMetaData(databaseMetaData);
+            Alert connectionMessageAlert = createMessageAlertFrom(databaseMetaData);
             connectionMessageAlert.showAndWait();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private Alert createMessageAlertFromDatabaseMetaData(DatabaseMetaData databaseMetaData) throws SQLException {
+    private Alert createMessageAlertFrom(DatabaseMetaData databaseMetaData) throws SQLException {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Connection Details");
         //catalogInfo
@@ -202,6 +208,7 @@ public class MainViewController extends baseStageController implements Initializ
             sqlEditor = new SQLEditor(SQLEditorTabPaneID);
         }
     }
+
     public void newSQLEditorTab() {
         initializeSQLEditor();
         sqlEditor.newTab("SQL " + sqlEditor.getCount());
@@ -212,6 +219,64 @@ public class MainViewController extends baseStageController implements Initializ
         sqlEditor.closeCurrentTab();
     }
 
+    public void openSQLEditorTab() throws IOException {
+        initializeSQLEditor();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load an existed SQL file");
+        fileChooser.getExtensionFilters().setAll(new FileChooser.ExtensionFilter("SQL files", "*.sql"));
+        File selectedFile = fileChooser.showOpenDialog(StageManager.get(Main.mainSceneManagerName).getOwnerStage());
+        if (selectedFile != null) {
+            String SQLData = new String(new FileInputStream(selectedFile).readAllBytes(), StandardCharsets.UTF_8);
+            final String title = "SQL " + sqlEditor.getCount();
+            sqlEditor.newTab(title);
+            sqlEditor.getSqlDataHashTable().get(title).setValue(SQLData);
+        }
+    }
+
+    @FXML
+    public void executeCurrentSQL() throws SQLException {//StringProperty [value: select
+        String sql = String.valueOf(sqlEditor.getSqlDataHashTable().get(sqlEditor.getCurrentTab().getText()));
+        String currentSQL = sql.substring("StringProperty [value: ".length(), sql.length() - 1);
+        String[] statements = currentSQL.split(";");
+        for (var statement : statements) {
+            if (statement.trim().isBlank())
+                continue;
+            if (statement.toLowerCase().trim().startsWith("select") || statement.toLowerCase().trim().startsWith("show")) {
+                executeQuerySQL(statement.trim());
+            } else {
+                executeUpdateSQL(statement.trim());
+            }
+        }
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Result");
+        alert.setHeaderText("Result");
+        alert.setResizable(true);
+        alert.setContentText(sqlLogger.toString());
+        alert.showAndWait();
+    }
+
+    private int executeUpdateSQL(String SQLStatement) throws SQLException {
+        receiveConnection();
+        Statement statement;
+        statement = connection.createStatement();
+        sqlLogger.add(SQLStatement, Calendar.getInstance());
+        return statement.executeUpdate(SQLStatement);
+
+    }
+
+    public void executeQueryAndShow() {
+        String queryStatement = queryTextFieldID.getText();
+        Accordion accordion = new Accordion(formTitledPaneForTable(queryStatement, executeQuerySQL(queryStatement)));
+        accordion.setPrefHeight(600);
+        Alert dialog = new Alert(Alert.AlertType.INFORMATION);
+        dialog.setTitle(queryStatement);
+        dialog.setGraphic(accordion);
+        dialog.setResizable(true);
+        dialog.setHeaderText("result");
+        dialog.showAndWait();
+
+    }
+
     class aboutMessage {
         private String author;
         private String version;
@@ -219,7 +284,7 @@ public class MainViewController extends baseStageController implements Initializ
         private String DevEnv;
         private String introduction;
 
-        public aboutMessage(String author, String version, String GitHub, String DevEnv, String introduction) {
+        aboutMessage(String author, String version, String GitHub, String DevEnv, String introduction) {
             this.author = author;
             this.version = version;
             this.GitHub = GitHub;
